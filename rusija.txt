@@ -1,0 +1,4 @@
+Rostov 500000
+Ufa 600000
+Sankt Petersburg 5000000
+
