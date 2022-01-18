@@ -1,253 +1,216 @@
-#define CRT_SECURE_NO_WARNINGS
-#include<stdio.h>
-#include<stdlib.h>
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
-struct polinom;
-typedef struct polinom *pozicija;
+#ifndef SUCCESS
+#define SUCCESS 0
+#endif
 
-typedef struct _pol
-{
-    int koef;
-    int eksp;
-    pozicija next;
+#ifndef ERROR
+#define ERROR 1
+#endif
 
-}polinom;
+struct elem;
+typedef struct elem* position;
+typedef struct elem {
+	int koef;
+	int pot;
+	position next;
+}element;
 
-int Unos1(pozicija);
-int Unos2(pozicija);
-int Ispis(pozicija);
-int Zbroj(pozicija, pozicija, pozicija);
-int Umnozak(pozicija, pozicija, pozicija);
+int OtvoriDatoteku(position P);
+int SortiraniUnos(int koef, int pot, position P);
+int Ispis(position P);
+int Zbrajanje(position prvi, position drugi, position suma);
+int Mnozenje(position prvi, position drugi, position umn);
 
 
 int main()
 {
-    polinom prvi;
-    polinom drugi;
-    polinom zbroj;
-    polinom umnozak;
+	element poli1, poli2, poliumn, polizbr;
 
-    prvi.next = NULL;
-    drugi.next = NULL;
-    umnozak.next = NULL;
-    zbroj.next = NULL;
-
-    Unos1(&prvi);
-    Unos2(&drugi);
-
-    printf("Prvi polinom:");
-    Ispis(prvi.next);
-    printf("Drugi polinom:");
-    Ispis(drugi.next);
-
-    Zbroj(&prvi, &drugi, &zbroj);
-    printf("Umnožak:");
-    Ispis(zbroj.next);
-
-    printf("Zbroj:");
-    Umnozak(&prvi, &drugi, &umnozak);
-    Ispis(umnozak.next);
-
-    return 0;
-}
-
-int Ispis(pozicija p)
-{
-    while(p != NULL)
-    {
-        printf("Koeficijent polinoma: %d   Eksponent polinoma: %d", p->koef, p->eksp);
-        p = p->next;
-    }
-
-    return 0;
-}
-
-int Unos1(pozicija p)
-{
-    FILE* fp = NULL;
-    char* filename = NULL;
-
-    filename = (char *)malloc(30* sizeof(char));
+	poli1.next = NULL;
+	poli2.next = NULL;
+	poliumn.next = NULL;
+	polizbr.next = NULL;
 	
-    printf("Unesite ime datoteke sa nastavkom .txt : ");
+
+	printf("Unesite ime datoteke u kojem se nalazi prvi polinom (sa .txt nastavkom)\n");
+
+	if (OtvoriDatoteku(&poli1) == ERROR)
+	{
+		perror("error reading poli1\n");
+		return ERROR;
+	}
+
+	printf("Unesite ime datoteke u kojem se nalazi drugi polinom (sa .txt nastavkom)\n");
+
+	if (OtvoriDatoteku(&poli2) == ERROR)
+	{
+		perror("error reading poli2\n");
+		return ERROR;
+	}
+
+	
+	printf("Prvi polinom\n");
+	if (Ispis(&poli1) == ERROR)
+		return ERROR;
+
+	printf("Drugi polinom\n");
+		if (Ispis(&poli2) == ERROR)
+			return ERROR;
+
+	
+	if (Zbrajanje(poli1.next, poli2.next, &polizbr) == ERROR)
+	{
+			perror("error with f Zbrajanje\n");
+			return ERROR;
+	}
+
+	printf("Zbroj polinoma\n");
+	if (Ispis(&polizbr) == ERROR)
+		return ERROR;
+
+	
+	
+	if (Mnozenje(poli1.next, poli2.next, &poliumn) == ERROR)
+	{
+		perror("error with f Mnozenje\n");
+		return ERROR;
+	}
+
+	printf("Umnozak polinoma\n");
+	if (Ispis(&poliumn) == ERROR)
+		return ERROR;
+
+
+
+		return SUCCESS;
+
+}
+int OtvoriDatoteku(position P)
+{
+	FILE* f;
+	char* filename;
+	int koef = 0, pot = 0;
+
+	filename = (char*)malloc(30 * sizeof(char));
 	scanf("%s", filename);
 
-    fp = fopen(filename,"r");
+	f = fopen(filename, "r");
 
-    if(fp == NULL)
-    {
-        printf("Greška pri otvaranju datoteke!");
-        return -1;
-    }
-    while(!feof(fp))
-    {
-        pozicija a = NULL;
-        a = (pozcija)malloc(sizeof(polinom));
-        if(a == NULL){
-            printf("Greška pri alokaciji memorije");
-            return -1;
-        }
-
-        pozicija prije, temp;
-        temp = p->next;
-        prije = p;
-        fscanf(fp,"%d %d", &a->koef, &a->eksp);
-        while(temp!= NULL && temp->eksp < a->eksp){
-                prije = temp;
-                temp = temp->next;
-
-        }
-
-        prije->next = a;
-        if(temp!=NULL)
-            a = a->next;
-            else
-            a->next = NULL;
-    }
-
-    return 0;
-}
-
-int Unos2(pozicija p)
-{
-
-
-    FILE* fp = NULL;
-    char* filename = NULL;
-
-    filename = (char *)malloc(30* sizeof(char));
-	
-    printf("Unesite ime datoteke sa nastavkom .txt : ");
-	scanf("%s", filename);
-
-    fp = fopen(filename,"r");
-
-    if(fp == NULL)
-    {
-        printf("Greška pri otvaranju datoteke!");
-        return -1;
-    }
-    while(!feof(fp))
-    {
-        pozicija a= NULL;
-        a = (pozcija)malloc(sizeof(polinom));
-        if(a == NULL){
-            printf("Greška pri alokaciji memorije");
-            return -1;
-        }
-
-        pozicija prije, temp;
-        temp = p->next;
-        prije = p;
-        fscanf(fp,"%d %d", &a->koef, &a->eksp);
-        while(temp!= NULL && temp->eksp < a->eksp){
-                prije = temp;
-                temp = temp->next;
-
-        }
-
-        prije->next = a;
-        if(temp!=NULL)
-            a = a->next;
-            else
-            a->next = NULL;
-    }
-
-    return 0;
-}
-
-
-int Zbroj(pozicija p, pozicija q, pozicija r)
-{
-    while (p->next != NULL && q->next != NULL)
+	while (!feof(f))
 	{
-		pozicija a = NULL;
-		a = (pozicija)malloc(sizeof(struct polinom));
-		if (a == NULL)
+		fscanf(f,"%d %d", &koef, &pot);
+		if (SortiraniUnos(koef, pot, P) == ERROR)
 		{
-			printf("Greška pri alokaciji memeorije\n");
-			return -1;
+			perror("Greska sortiranog unosa!\n");
+			return ERROR;
 		}
-		a->next = NULL;
 
-		if (p->next->eksp < q->next->eksp)
-		{
-			a->eksp = p->next->eksp;
-			a->koef = p->next->koef;
-			p = p->next;
-		}
-		else if (p->next->eksp> q->next->eksp)
-		{
-			a->eksp = q->next->eksp;
-			a->koef = q->next->koef;
-			q = q->next;
-		}
-		else
-		{
-			a->eksp = p->next->eksp;
-			a->koef =(p->next->koef + q->next->koef);
-			p = p->next;
-			q = q->next;
-		}
-		r->next = a;
-		r = a;
-	}
-	pozicija temp;
-	if (p->next == NULL)
-		temp = q->next;
-	else
-		temp = p->next;
-	while (temp != NULL)
-	{
-		pozicija a = NULL;
-		a = (pozicija)malloc(sizeof(struct polinom));
-		if (a== NULL)
-		{
-			printf("Greška pri alokaciji memorije\n");
-			return -1;
-		}
-		a->next = NULL;
-		a->eksp= temp->eksp;
-		a->koef = temp->koef;
-		r->next = a;
-		r = a;
-		temp = temp->next;
 	}
 
+	return SUCCESS;
 
-    return 0;
 }
-
-
-int Umnozak(pozcija p, pozicija q, pozicija r)
+int SortiraniUnos(int koef, int pot, position P)
 {
+	position NewNode = NULL;
 
-    pozicija prvi = p->next;
-	pozicija drugi = q->next;
-    polinom P;
-	pozicija a = NULL;
-	a = (pozicija)malloc(sizeof(struct polinom));
-	if (a == NULL)
+	NewNode = (position)malloc(sizeof(element));
+
+	NewNode->koef = koef;
+	NewNode->pot = pot;
+	NewNode->next = NULL;
+
+	while ((P->next != NULL) && (P->next->pot > pot))
 	{
-		printf("Greska pri alokaciji memorije!");
-		return -1;
+		P = P->next;
 	}
-	a->next = NULL;
-	P.next = a;
+
+	if ((P->next != NULL) && (P->next->pot == pot))
+	{
+		P->next->koef = P->next->koef + koef;
+
+		return SUCCESS;
+	}
+
+	NewNode->next = P->next;
+	P->next = NewNode;
+
+	return SUCCESS;
+
+
+}
+int Ispis(position P)
+{	
+	while (P->next != NULL)
+	{
+		printf("\t%d ^ %d\n", P->next->koef, P->next->pot);
+
+		P = P->next;
+	}
+
+	return SUCCESS;
+
+}
+int Zbrajanje(position prvi, position drugi, position suma)
+{
+	int koef = 0, pot = 0;
+
 	while (prvi != NULL)
 	{
-		drugi = q->next;
-		while (drugi != NULL)
-		{
-
-			a->koeficijent = prvi->koeficijent * drugi->koeficijent;
-			a->eksponent = prvi->eksponent + drugi->eksponent;
-
-			Zbroj(&P, r, r);
-			drugi = drugi->next;
-		}
+		koef = prvi->koef;
+		pot = prvi->pot;
+		if ((SortiraniUnos(koef, pot, suma) == ERROR))
+			perror("Greska sortiranog unosa!");
 		prvi = prvi->next;
 	}
 
-    return 0;
+	while (drugi != NULL)
+	{
+		koef = drugi->koef;
+		pot = drugi->pot;
+		if ((SortiraniUnos(koef, pot, suma) == ERROR))
+			perror("Greska sortiranog unosa!");
+		drugi = drugi->next;
+	}
+
+	return SUCCESS;
+
 }
+int Mnozenje(position prvi, position drugi , position umn)
+{
+	position temp;
+	int koef = 0, pot = 0;
+
+	while (prvi != NULL)
+	{
+		temp = drugi;
+
+		while (temp != NULL)
+		{
+			koef = prvi->koef * temp->koef;
+			pot = prvi->pot + temp->pot;
+			if ((SortiraniUnos(koef, pot, umn) == ERROR))
+				perror("Greska sortiranog unosa!");
+			
+			temp = temp->next;
+		}
+
+		prvi = prvi->next;
+
+
+	}
+
+	return SUCCESS;
+
+
+
+}
+
+   
+
+   
