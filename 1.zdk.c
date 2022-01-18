@@ -1,7 +1,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include<malloc.h>
+#include<stdlib.h>
 #include<string.h>
 
 
@@ -39,8 +39,8 @@ int BrojiRetke()
 
     fp = fopen("studenti.txt","r");
 
-    if (fp = NULL)
-        printf("Greška pri otvaranju datoteke!");
+    if (fp == NULL)
+        printf("GreÅ¡ka pri otvaranju datoteke!");
 
     do {
         c = getc(fp);
@@ -65,8 +65,8 @@ int UzmiIzDatoteke(int br, _stud* student)
 
     fp = fopen("studenti.txt", "r");
 
-    if (fp = NULL)
-        printf("Greška pri otvaranju datoteke!");
+    if (fp == NULL)
+        printf("GreÅ¡ka pri otvaranju datoteke!");
 
     for (i = 0; i < br; i++)
     {
@@ -74,10 +74,10 @@ int UzmiIzDatoteke(int br, _stud* student)
 
         student[i].ime = (char*)malloc(strlen(temp1) * sizeof(char));
         if (student[i].ime == NULL)
-            printf("Greška sa imenom");
+            printf("GreÅ¡ka sa imenom");
         student[i].prez = (char*)malloc(strlen(temp2) * sizeof(char));
         if (student[i].prez == NULL)
-            printf("Greška sa prezimenom");
+            printf("GreÅ¡ka sa prezimenom");
 
         strcpy(student[i].ime, temp1);
         strcpy(student[i].prez, temp2);
@@ -95,9 +95,9 @@ int Ispis(int br, _stud* student)
     fp = fopen("studenti.txt", "r");
 
     if (fp == NULL)
-        printf("Greška pri otvaranju datoteke");
+        printf("GreÅ¡ka pri otvaranju datoteke");
 
-    printf("\tIme     Prezime\ REL Bodovi\t\t\ APS Bodovi\n ");
+    printf("\tIme     Prezime\t REL Bodovi\t\t\t APS Bodovi\n ");
     for (i = 0; i < br; i++)
         printf(" %10s %10s \t %.2f percent \t\t %d \n", student[i].ime, student[i].prez, (float)((student[i].bod / (float)50) * 100), student[i].bod);
 
