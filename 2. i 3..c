@@ -1,654 +1,416 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <malloc.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-
-#ifndef SUCSESS
-#define SUCSESS 0
-#endif
-
-#ifndef ERROR
-#define ERROR 1
-#endif
-
-struct student;
-typedef struct student* pozicija;
-typedef struct student {
-	char* ime;
-	char* prez;
-	int god;
-	pozicija next;
-}stud;
-
-int ReadFile(pozicija);
-int Insert(pozicija, char*, char*, int);
-int PrintWhole(pozicija);
-int AddUpfront(pozicija);
-int AddBack(pozicija);
-int Delete(pozicija);
-int Find(pozicija);
-int AddUpfrontSomeone(pozicija);
-int AddBackSomeone(pozicija);
-int Sort(pozicija);
-int PutInFile(pozicija);
-int ReadNewFile(pozicija);
-
-int main()
-{
-	stud head;
-	head.next = NULL;
-	int izbor = 0;
-
-
-	if (ReadFile(&head) == ERROR)
-		return ERROR;
-
-	PrintWhole(head.next);
-
-	fflush(stdin);
-
-	printf("Upisite broj zeljene naredbe:\n");
-	printf("1)Dodaj element na pocetak\n2)Ispisi listu\n3)Dodaj element na kraj liste\n4)Brisi element liste\n5)Nadji element iz liste\n6)Dodaj novi element ispred odre�enog elementa\n7)Dodaj novi element iza odre�enog elemnta\n8)Sortiraj listu po prezimenima\n9)Upisi listu u datoteku\n10)Ucitaj novu listu iz druge datoteke\n");
-	printf("\n");
-	scanf("%d", &izbor);
-	printf("\n");
-	switch (izbor)
-	{
-	case 1:
-
-		if ((AddUpfront(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("AddUpFront() ");
-			return ERROR;
-		}
-
-		break;
-
-	case 2:
-
-		if ((PrintWhole(head.next) == SUCSESS))
-		{
-			printf("Ovo je vas registar\n");
-		}
-		else
-		{
-			perror("PrintWhole() ");
-			return ERROR;
-		}
-
-		break;
-
-	case 3:
-
-		if ((AddBack(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("AddBack() ");
-			return ERROR;
-		}
-		break;
-
-	case 4:
-
-		if ((Delete(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("Delete() ");
-			return ERROR;
-		}
-
-		break;
-
-	case 5:
-
-		if ((Find(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("AddBack() ");
-			return ERROR;
-		}
-
-		break;
-
-	case 6:
-
-		if ((AddUpfrontSomeone(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("AddUpfrontSomeone() ");
-			return ERROR;
-		}
-
-		break;
-
-	case 7:
-		if ((AddBackSomeone(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("AddBackSomeone() ");
-			return ERROR;
-		}
-		break;
-	case 8:
-		if ((Sort(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("Sort() ");
-			return ERROR;
-		}
-		break;
-	case 9:
-		if ((PutInFile(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("PutInFile() ");
-			return ERROR;
-		}
-		break;
-	case 10:
-		if ((ReadNewFile(&head) == SUCSESS))
-		{
-			printf("Vasa nova lista\n");
-			PrintWhole(head.next);
-		}
-		else
-		{
-			perror("ReadFile() ");
-			return ERROR;
-		}
-		break;
-
-	default:
-		printf("Niste unjeli jedan od ponudenih brojeva,nista od odabira\n");
-		break;
-	}
-
-	return SUCSESS;
-}
-int ReadFile(pozicija P)
-{
-	FILE* fp;
-	char* buffime = NULL;
-	char* buffprez = NULL;
-	int buffgod = 0;
-	char* filename = NULL;
-
-	buffime = (char*)malloc(25 * sizeof(char));
-	if (buffime == NULL)
-		return ERROR;
-	buffprez = (char*)malloc(25 * sizeof(char));
-	if (buffprez == NULL)
-		return ERROR;
-
-	filename = (char*)malloc(25 * sizeof(char));
-	if (filename == NULL)
-		return ERROR;
-
-
-
-
-	fp = fopen("studenti.txt", "r");
-
-	if (fp == NULL)
-		return ERROR;
-
-
-	while (!feof(fp))
-	{
-		fscanf(fp, "%s %s %d", buffime, buffprez, &buffgod);
-
-
-		if ((Insert(P, buffime, buffprez, buffgod) == ERROR))
-			return ERROR;
-
-	}
-
-	fclose(fp);
-
-	return SUCSESS;
-
-}
-int Insert(pozicija P, char* name, char* surname, int yrs)
-{
-	pozicija NewNode = NULL;
-
-	NewNode = (pozicija)malloc(sizeof(stud));
-	if (NewNode == NULL)
-		return ERROR;
-
-	NewNode->ime = (char*)malloc(25 * sizeof(char));
-	if (NewNode->ime == NULL)
-		return ERROR;
-	NewNode->prez = (char*)malloc(25 * sizeof(char));
-	if (NewNode->prez == NULL)
-		return ERROR;
-	NewNode->next = NULL;
-
-	strcpy(NewNode->ime, name);
-	strcpy(NewNode->prez, surname);
-	NewNode->god = yrs;
-
-	while (P->next != NULL)
-	{
-		P = P->next;
-	}
-
-
-	NewNode->next = P->next;
-	P->next = NewNode;
-
-	return SUCSESS;
-}
-int PrintWhole(pozicija P)
-{
-	printf("\tIme\tPrezime\tGodiste \n");
-	printf("\n");
-
-	while (P != NULL) {
-
-		printf("\t%s\t%s\t%d \n", P->ime, P->prez, P->god);
-
-		P = P->next;
-
-	}
-
-	return SUCSESS;
-}
-int AddUpfront(pozicija P)
-{
-	pozicija NewNode = NULL;
-
-
-	NewNode = (pozicija)malloc(sizeof(stud));
-	if (NewNode == NULL)
-		return ERROR;
-
-	NewNode->ime = (char*)malloc(25 * sizeof(char));
-	if (NewNode->ime == NULL)
-		return ERROR;
-	NewNode->prez = (char*)malloc(25 * sizeof(char));
-	if (NewNode->prez == NULL)
-		return ERROR;
-	NewNode->next = NULL;
-
-	printf("Unesite ime novog covjeka\n");
-	scanf("%s", NewNode->ime);
-
-	printf("Unesite prezime novog covjeka\n");
-	scanf("%s", NewNode->prez);
-
-	printf("Unesite godine novog covjeka\n");
-	scanf("%d", &(NewNode->god));
-
-	NewNode->next = P->next;
-	P->next = NewNode;
-
-	return SUCSESS;
-}
-int AddBack(pozicija P)
-{
-	pozicija NewNode = NULL;
-
-
-	NewNode = (pozicija)malloc(sizeof(stud));
-	if (NewNode == NULL)
-		return ERROR;
-
-	NewNode->ime = (char*)malloc(25 * sizeof(char));
-	if (NewNode->ime == NULL)
-		return ERROR;
-	NewNode->prez = (char*)malloc(25 * sizeof(char));
-	if (NewNode->prez == NULL)
-		return ERROR;
-	NewNode->next = NULL;
-
-	printf("Unesite ime novog covjeka\n");
-	scanf("%s", NewNode->ime);
-
-	printf("Unesite prezime novog covjeka\n");
-	scanf("%s", NewNode->prez);
-
-	printf("Unesite godine novog covjeka\n");
-	scanf("%d", &(NewNode->god));
-
-
-	while (P->next != NULL)
-	{
-		P = P->next;
-	}
-
-	NewNode->next = P->next;
-	P->next = NewNode;
-
-	return SUCSESS;
-
-}
-int Delete(pozicija P)
-{
-	char* surname = NULL;
-	pozicija temp = NULL;
-
-
-	surname = (char*)malloc(sizeof(char) * 25);
-	if (surname == NULL) return ERROR;
-
-	printf("Unesi prezime covjeka kojeg zelis maknuti\n");
-	scanf("%s", surname);
-
-	while (P->next != NULL && strcmp(P->next->prez, surname) != 0)
-	{
-		P = P->next;
-	}
-
-	if (P->next != NULL)
-	{
-		temp = P->next;
-		P->next = P->next->next;
-
-		free(temp);
-	}
-
-
-	else
-	{
-		printf("Unjeli ste nepostojece prezime\n");
-	}
-
-	return SUCSESS;
-
-}
-int Find(pozicija P)
-{
-	char* surname;
-	int br = 0;
-	pozicija* FirstSame;
-
-
-	surname = (char*)malloc(sizeof(char) * 20);
-	if (surname == NULL) return ERROR;
-
-	printf("Unesite prezime trazene osobe \n");
-	scanf("%s", surname);
-
-	P = P->next;
-
-	while (P->next != NULL)
-	{
-		if (strcmp(P->prez, surname) == 0)
-		{
-			printf("%s %s %d\n", P->ime, P->prez, P->god);
-			br++;
-		}
-
-		P = P->next;
-
-	}
-
-	if ((P->next == NULL) && br == 0)
-	{
-		printf("Nema unesenog prezimena koje ste trazili");
-		return SUCSESS;
-	}
-
-	return SUCSESS;
-
-}
-int AddUpfrontSomeone(pozicija P)
-{
-	pozicija NewNode = NULL;
-	char* covijek = NULL;
-
-
-	NewNode = (pozicija)malloc(sizeof(stud));
-	if (NewNode == NULL)
-		return ERROR;
-
-	NewNode->ime = (char*)malloc(25 * sizeof(char));
-	if (NewNode->ime == NULL)
-		return ERROR;
-	NewNode->prez = (char*)malloc(25 * sizeof(char));
-	if (NewNode->prez == NULL)
-		return ERROR;
-	NewNode->next = NULL;
-
-	covijek = (char*)malloc(30 * sizeof(char));
-	if (covijek == NULL)
-		return ERROR;
-
-	printf("Unesite ime novog covjeka\n");
-	scanf("%s", NewNode->ime);
-
-	printf("Unesite prezime novog covjeka\n");
-	scanf("%s", NewNode->prez);
-
-	printf("Unesite godine novog covjeka\n");
-	scanf("%d", &(NewNode->god));
-
-	printf("Unesite prezime covjeka ispred kojega zelite dodati novog covijeka\n");
-	scanf("%s", covijek);
-
-	while ((P->next) != NULL && (strcmp(covijek, P->next->prez) != 0))
-	{
-		P = P->next;
-	}
-
-	if (P->next == NULL)
-		perror("AddUpfrontSomeone()");
-
-	else
-	{
-		NewNode->next = P->next;
-		P->next = NewNode;
-	}
-
-	return SUCSESS;
-
-}
-int AddBackSomeone(pozicija P)
-{
-	pozicija NewNode = NULL;
-	char* covijek = NULL;
-
-
-	NewNode = (pozicija)malloc(sizeof(stud));
-	if (NewNode == NULL)
-		return ERROR;
-
-	NewNode->ime = (char*)malloc(25 * sizeof(char));
-	if (NewNode->ime == NULL)
-		return ERROR;
-	NewNode->prez = (char*)malloc(25 * sizeof(char));
-	if (NewNode->prez == NULL)
-		return ERROR;
-	NewNode->next = NULL;
-
-	covijek = (char*)malloc(30 * sizeof(char));
-	if (covijek == NULL)
-		return ERROR;
-
-	printf("Unesite ime novog covjeka\n");
-	scanf("%s", NewNode->ime);
-
-	printf("Unesite prezime novog covjeka\n");
-	scanf("%s", NewNode->prez);
-
-	printf("Unesite godine novog covjeka\n");
-	scanf("%d", &(NewNode->god));
-
-	printf("Unesite prezime covjeka iza kojega zelite dodati novog covijeka\n");
-	scanf("%s", covijek);
-
-	while ((P->next) != NULL && (strcmp(covijek, P->next->prez) != 0))
-	{
-		P = P->next;
-	}
-
-	if (P->next == NULL)
-		perror("AddUpfrontSomeone()");
-
-	else
-	{
-		NewNode->next = P->next->next;
-		P->next->next = NewNode;
-	}
-
-	return SUCSESS;
-}
-int Sort(pozicija P)
-{
-	pozicija temp, now, bef, jeb;
-
-
-	jeb = NULL;
-
-
-	while (P->next != jeb)
-	{
-		bef = P;
-		now = P->next;
-
-		while (now->next != jeb)
-		{
-			if (strcmp(now->prez, now->next->prez) > 0)
-			{
-				temp = now->next;
-				bef->next = temp;
-				now->next = temp->next;
-				temp->next = now;
-
-				now = temp;
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>														
+#include<string.h>															
+#include<ctype.h>	// za toupper														
+#define MAX 64
+
+typedef struct Student * Pozicija;											
+
+struct Student {															
+	char ime[MAX];
+	char prezime[MAX];
+	int godRod;
+	Pozicija next;
+};
+
+void Ispis(Pozicija P);														
+void UnosP(char *FName, char *LName, int birthYear, Pozicija P);			
+void UnosK(char *FName, char *LName, int birthYear, Pozicija P);			
+Pozicija Trazi(char *LName, Pozicija P);									
+Pozicija TraziP(char *LName, Pozicija P);								
+void Brisi(char *LName, Pozicija P);										
+void UnosIza(char *FName, char *LName, int birthYear, char *oldStudent, Pozicija P);		
+void UnosIspred(char *FName, char *LName, int birthYear, char *oldStudent, Pozicija P);		
+void UnosStudent(char *FName, char *LName, int birthYear, Pozicija q);		
+void Sortiraj(Pozicija P);													
+int Datoteka(Pozicija P);													
+int RDatoteka(Pozicija P);													
+int main() {
+	char FName[MAX];
+	char LName[MAX];
+	char oldStudent[MAX];													
+	int birthYear = 0;
+	char izb;																
+	struct Student Head;													
+
+	Head.next = NULL;														
+
+	while (1) {																
+
+		printf("Izbornik:\nP - unos studenta na pocetak liste\nI - ispis liste\nK - unos studenta na kraj liste"
+			"\nT - trazenje studenta (po prezimenu)\nB - brisanje odredenog studenta iz liste (po prezimenu)"
+			"\nY - dodavanje novog studenta iza odredenog studenta\nX - dodavanje novog studenta ispred odredenog studenta"
+			"\nS - sortiranje liste (po prezimenima)\nD - upisivanje liste u datoteku\nR - citanje liste iz datoteke\nQ - kraj programa\n\n");
+		scanf(" %c", &izb);
+		puts("");
+
+		switch (toupper(izb)) {												
+		case 'P':															
+			puts("Vrsi se unos studenta na pocetak liste.");
+
+			printf("\nUnesite ime studenta.\n");
+			scanf(" %s", FName);
+			printf("\nUnesite prezime studenta.\n");
+			scanf(" %s", LName);
+			printf("\nUnesite godinu rodenja studenta.\n");
+			scanf("%d", &birthYear);
+
+			UnosP(FName, LName, birthYear, &Head);
+
+			printf("\nUspjesno ste dodali studenta na pocetak liste.\n\n");
+			break;
+
+		case 'I':															
+			puts("Vrsi se ispis liste.");
+			puts("");
+			Ispis(Head.next);
+			break;
+
+		case 'K':															
+			puts("Vrsi se unos studenta na kraj liste.");
+
+			printf("\nUnesite ime studenta.\n");
+			scanf(" %s", FName);
+			printf("\nUnesite prezime studenta.\n");
+			scanf(" %s", LName);
+			printf("\nUnesite godinu rodenja studenta.\n");
+			scanf("%d", &birthYear);
+
+			UnosK(FName, LName, birthYear, &Head);
+
+			printf("\nUspjesno ste dodali studenta na kraj liste.\n\n");
+			break;
+
+		case 'T':															
+			puts("Vrsi se trazenje studenta (po prezimenu).");
+
+			printf("\nUnesite prezime studenta kojeg zelite pronaci.\n");
+			scanf(" %s", LName);
+
+			Trazi(LName, Head.next);
+
+			puts("");
+			break;
+
+		case 'B':															
+			puts("Vrsi se brisanje studenta iz liste (po prezimenu).");
+
+			printf("\nUnesite prezime studenta kojeg zelite izbrisati iz liste.\n");
+			scanf(" %s", LName);
+
+			Brisi(LName, &Head);
 
+			puts("");
+			break;
+
+		case 'Y':
+			puts("Vrsi se dodavanje novog studenta iza odredenog studenta.");
+
+			printf("\nUnesite prezime studenta iza kojeg zelite dodati novog studenta.\n");
+			scanf(" %s", oldStudent);
+
+			if (Trazi(oldStudent, &Head) == NULL)							
+
+			printf("\nVrsi se unos novog studenta.\n");
+
+			printf("\nUnesite ime studenta.\n");
+			scanf(" %s", FName);
+			printf("\nUnesite prezime studenta.\n");
+			scanf(" %s", LName);
+			printf("\nUnesite godinu rodenja studenta.\n");
+			scanf("%d", &birthYear);
+
+			UnosIza(FName, LName, birthYear, oldStudent, &Head);
+
+			printf("\nUspjesno ste dodali novog studenta iza studenta %s.\n\n", oldStudent);
+			break;
+
+		case 'X':
+			puts("Vrsi se dodavanje novog studenta ispred odredenog studenta.");
+
+			printf("\nUnesite prezime studenta ispred kojeg zelite dodati novog studenta.\n");
+			scanf(" %s", oldStudent);
+
+			if (TraziP(oldStudent, &Head) == NULL) {						
+				break;														
+				puts("");
+				break;
 			}
-			bef = now;
-			now = now->next;
+
+			printf("\nVrsi se unos novog studenta.\n");
+
+			printf("\nUnesite ime studenta.\n");
+			scanf(" %s", FName);
+			printf("\nUnesite prezime studenta.\n");
+			scanf(" %s", LName);
+			printf("\nUnesite godinu rodenja studenta.\n");
+			scanf("%d", &birthYear);
+
+			UnosIspred(FName, LName, birthYear, oldStudent, &Head);
+
+			printf("\nUspjesno ste dodali novog studenta ispred studenta %s.\n\n", oldStudent);
+			break;
+
+		case 'S':
+			puts("Vrsi se sortiranje liste po prezimenima.");
+
+			Sortiraj(&Head);
+
+			printf("\nLista je uspjesno sortirana.\n\n");
+			break;
+
+		case 'D':
+			puts("Vrsi se upis liste u datoteku.");
+
+			Datoteka(Head.next);
+
+			printf("\nLista je uspjesno upisana u datoteku.\n\n");
+			break;
+		case 'R':
+			puts("Vrsi se citanje liste iz datoteke.");
+			puts("");
+
+			RDatoteka(&Head);
+
+			printf("\nLista je uspjesno procitana iz datoteke.\n\n");
+			break;
+
+		case 'Q':															
+			puts("Kraj programa!");
+			return 1;
+			break;
+
+		default:															
+			printf("Greska pri unosu! Pokusajte ponovno.\n\n");
+			break;
 
 		}
-		jeb = now;
-
 	}
 
-	return SUCSESS;
+	system("pause");
 
+	return 0;
 }
-int PutInFile(pozicija P)
-{
-	FILE* fp;
-
-	fp = fopen("izlaz.txt", "w");
 
 
-	while (P->next != NULL)
-	{
-		fprintf(fp, "%s\t%s\t%d\n", P->next->ime, P->next->prez, P->next->god);
+void Ispis(Pozicija P) {
 
+	printf("Ime		 Prezime	Godina rodenja\n");
+	while (P != NULL) {
+		printf("%-8s\t %-8s\t %8d.\n", P->ime, P->prezime, P->godRod);
 		P = P->next;
 	}
 
-	fclose(fp);
-
-
-	return SUCSESS;
+	puts("");
 
 }
-int ReadNewFile(pozicija P)
-{
-	FILE* fp;
-	char* buffime = NULL;
-	char* buffprez = NULL;
-	int buffgod = 0;
-	char* filename = NULL;
-	pozicija temp = NULL;
-	pozicija POC = NULL;
 
-	POC = P;
+void UnosP(char *FName, char *LName, int birthYear, Pozicija P) {
 
-	buffime = (char*)malloc(25 * sizeof(char));
-	if (buffime == NULL)
-		return ERROR;
-	buffprez = (char*)malloc(25 * sizeof(char));
-	if (buffprez == NULL)
-		return ERROR;
+	Pozicija q;
 
-	filename = (char*)malloc(25 * sizeof(char));
-	if (filename == NULL)
-		return ERROR;
+	q = (Pozicija)malloc(sizeof(struct Student));						
 
-	printf("Unesite ime nove datoteke sa .txt nastavkom\n");
-	fflush(stdin);
-	scanf("%s", filename);
+	UnosStudent(FName, LName, birthYear, q);								
+																			
+	q->next = P->next;
+	P->next = q;
+
+}
+
+void UnosK(char *FName, char *LName, int birthYear, Pozicija P) {
+
+	Pozicija q;
+
+	while (P->next != NULL)													
+		P = P->next;
 
 
-	fp = fopen(filename, "r");
+	q = (Pozicija)malloc(sizeof(struct Student));						
 
-	if (fp == NULL)
-		return ERROR;
+	UnosStudent(FName, LName, birthYear, q);
 
+	q->next = P->next;
+	P->next = q;
+
+}
+
+Pozicija Trazi(char *LName, Pozicija P) {
+
+	int br = 1;																
+
+	while (P != NULL && strcmp(P->prezime, LName)) {						
+		P = P->next;														
+		br++;
+	}
+
+
+	if (P == NULL) {														
+		printf("\nStudent prezimena %s se ne nalazi unutar liste.\n", LName);
+		return NULL;
+	}
+	else {
+		printf("\nStudent %s %s (%d.) se nalazi na %d. mjestu u listi.\n", P->ime, P->prezime, P->godRod, br);
+		return P;
+	}
+
+}
+
+Pozicija TraziP(char *LName, Pozicija P) {
+
+	Pozicija prev = P;
 	P = P->next;
 
-	while (P->next != NULL)
-	{
-		temp = P;
+	while (P != NULL && strcmp(P->prezime, LName)) {						
+		prev = P;
 		P = P->next;
-		free(temp);
-
-
-	}
-	if (P->next == NULL)
-	{
-		temp = P;
-		free(temp);
 	}
 
-	P = POC;
-
-	while (!feof(fp))
-	{
-		fscanf(fp, "%s %s %d", buffime, buffprez, &buffgod);
-
-
-		if ((Insert(P, buffime, buffprez, buffgod) == ERROR))
-			return ERROR;
-
+	if (P == NULL) {
+		printf("\nStudent prezimena %s se ne nalazi unutar liste.\n", LName);
+		return NULL;
 	}
 
-	fclose(fp);
+	return prev;
+}
 
-	return SUCSESS;
+void Brisi(char *LName, Pozicija P) {
+	Pozicija prev;
 
+	prev = TraziP(LName, P);
 
+	printf("\nStudent %s %s (%d.) se izbrisao iz liste.\n", prev->next->ime, prev->next->prezime, prev->next->godRod);
+
+	if (prev != NULL) {
+		P = prev->next;														
+		prev->next = P->next;
+		free(P);															
+	}
+
+}
+
+void UnosIza(char *FName, char *LName, int birthYear, char *oldStudent, Pozicija P) {
+
+	Pozicija q;
+
+	P = Trazi(oldStudent, P);
+
+	q = (Pozicija)malloc(sizeof(struct Student));
+
+	UnosStudent(FName, LName, birthYear, q);
+
+	q->next = P->next;
+	P->next = q;
+
+}
+
+void UnosIspred(char *FName, char *LName, int birthYear, char *oldStudent, Pozicija P) {
+
+	Pozicija q;
+
+	Pozicija prev = TraziP(oldStudent, P);
+
+	q = (Pozicija)malloc(sizeof(struct Student));
+
+	UnosStudent(FName, LName, birthYear, q);
+
+	q->next = prev->next;
+	prev->next = q;															
+
+}
+
+void UnosStudent(char *FName, char *LName, int birthYear, Pozicija q) {
+	
+	strcpy(q->ime, FName);
+	strcpy(q->prezime, LName);
+	q->godRod = birthYear;
+
+}
+
+void Sortiraj(Pozicija P) {													
+
+	Pozicija j, prev_j, temp, end;
+
+	end = NULL;
+
+	while (P->next != end) {
+		prev_j = P;
+		j = P->next;
+		
+		while (j->next != end) {
+			if (strcmp(j->prezime, j->next->prezime) > 0) {
+				temp = j->next;
+				prev_j->next = temp;
+				j->next = temp->next;
+				temp->next = j;
+
+				j = temp;
+			}
+
+			prev_j = j;
+			j = j->next;
+		}
+
+		end = j;
+	}
+
+}
+
+int Datoteka(Pozicija P) {
+
+	FILE *studenti;
+
+	studenti = fopen("studenti.txt", "w");									
+
+	if (studenti == NULL) {													
+		puts("Greska pri otvaranju datoteke!");
+		return -1;
+	}
+
+	fprintf(studenti, "Ime:\t\tPrezime:\t\tGodina rodenja:");
+	while (P != NULL) {														
+
+		fprintf(studenti, "\n");
+		fprintf(studenti, "%s\t\t%s\t\t%d", P->ime, P->prezime, P->godRod);
+
+		P = P->next;
+	}
+
+	fclose(studenti);														
+
+	return 0;
+}
+
+int RDatoteka(Pozicija P) {
+
+	Pozicija q;
+	FILE *studenti;
+
+	P->next = NULL;
+
+	studenti = fopen("studenti.txt", "r");									
+
+	if (studenti == NULL) {													
+		puts("Datoteka je prazna.");
+		return -1;
+	}
+
+	rewind(studenti);
+
+	while (1)															
+		if (fgetc(studenti) == '\n')
+			break;
+
+	while (!feof(studenti)) {
+		q = (Pozicija)malloc(sizeof(struct Student));
+		fscanf(studenti, "%s %s %d", q->ime, q->prezime, &q->godRod);
+
+		q->next = P->next;
+		P->next = q;
+		P = q;
+	}
+
+	fclose(studenti);
+	return 0;
 }
