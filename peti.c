@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#deifne MAX 40
+#define MAX 40
 
 typedef struct _node* position;
 typedef struct _node {
@@ -10,11 +10,11 @@ typedef struct _node {
 	position next;
 }node;
 
-int Push(position, position);
-int Pop(position);
+int Push(position stack, position current);
+int Pop(position stack);
 position stvoriElement();
-int procitajDatoteku(char);
-int racunPostfixa(position, char*);
+char* procitajDatoteku(char filename[MAX]);
+int racunPostfixa(position stack, char* row);
 
 int main()
 {
@@ -26,8 +26,7 @@ int main()
 	printf("Unesite ime datoteke: ");
 	scanf("%s", filename);
 
-	postfix = procitajDatoteku(filename);
-
+	strcpy(postfix, procitajDatoteku(filename));
 	racunPostfixa(&stack, postfix);
 
 	printf("\nrezultat = %d\n", stack.next->el);
@@ -64,7 +63,7 @@ position stvoriElement() {
 	return temp;
 }
 
-int procitajDatoteku(char filename[MAX]) {
+char* procitajDatoteku(char filename[MAX]) {
 	FILE* fp;
 	strcat(filename, ".txt");
 
