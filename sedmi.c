@@ -229,7 +229,7 @@ int izbor(char *komanda)
 		return 3;
 	else if (!strcmp(komanda, "dir"))
 		return 4;
-	else if (!strcmp(komanda, "exit"));
+	else if (!strcmp(komanda, "exit"))
 		return 5;
 }
 
