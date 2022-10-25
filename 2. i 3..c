@@ -17,8 +17,8 @@ struct Student {
 void Ispis(Pozicija P);														
 void UnosP(char *FName, char *LName, int birthYear, Pozicija P);			
 void UnosK(char *FName, char *LName, int birthYear, Pozicija P);			
-Pozicija Trazi(char *LName, Pozicija P);									
-Pozicija TraziP(char *LName, Pozicija P);								
+Pozicija Trazi(char *LName, Pozicija P);	 //trazi prezime								
+Pozicija TraziP(char *LName, Pozicija P);	//trazi prethodnog							
 void Brisi(char *LName, Pozicija P);										
 void UnosIza(char *FName, char *LName, int birthYear, char *oldStudent, Pozicija P);		
 void UnosIspred(char *FName, char *LName, int birthYear, char *oldStudent, Pozicija P);		
